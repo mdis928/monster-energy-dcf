@@ -1,3 +1,4 @@
+#pytrends is not working because HTTP 429 error. Too many automated requests
 
 import pandas as pd
 

@@ -11,5 +11,8 @@ DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 
 FMP_API_KEY = os.getenv("FMP_API_KEY")
+ROIC_API_KEY = os.getenv("ROIC_API_KEY")
 
 print("API key loaded:", bool(FMP_API_KEY))
+
+print("API key loaded:", bool(ROIC_API_KEY))
