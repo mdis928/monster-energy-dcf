@@ -57,4 +57,13 @@ management_df = earnings_call_df[
     earnings_call_df["speaker"].isin(management_speakers)
 ]
 
+fiscal_year = call_data["fiscal_year"]
+management_df["fiscal_year"] = fiscal_year
+
+fiscal_quarter = call_data["fiscal_quarter"]
+management_df["fiscal_quarter"] = fiscal_quarter
+
+call_date = call_data["date"]
+management_df["call_date"] = call_date
+
 print(management_df)
