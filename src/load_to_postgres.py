@@ -2,6 +2,7 @@ import psycopg
 
 from config import DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD
 from financial_etl import financials_df
+from management_etl import management_df
 
 
 insert_query = """
@@ -22,6 +23,27 @@ insert_query = """
         eps = EXCLUDED.eps;
 """
 
+management_insert_query  = """
+    INSERT INTO management_commentary (
+        company_id,
+        call_date,
+        commentary_source,
+        commentary_text,
+        commentary_hash,
+        fiscal_year,
+        fiscal_quarter,
+        speaker  
+)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+   ON CONFLICT (
+    company_id,
+    fiscal_year,
+    fiscal_quarter,
+    speaker,
+    commentary_hash
+)
+DO NOTHING
+"""
 
 try:
     with psycopg.connect(
@@ -35,6 +57,12 @@ try:
         with conn.cursor() as cursor:
             for row in financials_df.itertuples(index=False, name=None):
                 cursor.execute(insert_query, row)
+
+        conn.commit()
+
+        with conn.cursor() as cursor:
+            for row in management_df.itertuples(index=False, name=None):
+                cursor.execute(management_insert_query, row)
 
         conn.commit()
 

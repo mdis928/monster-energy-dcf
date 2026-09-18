@@ -1,5 +1,6 @@
 import requests
 import pandas as pd
+import hashlib
 
 from config import ROIC_API_KEY
 
@@ -53,6 +54,7 @@ management_speakers = [
     "Mark Astrachan"
 ]
 
+
 management_df = earnings_call_df[
     earnings_call_df["speaker"].isin(management_speakers)
 ]
@@ -66,4 +68,40 @@ management_df["fiscal_quarter"] = fiscal_quarter
 call_date = call_data["date"]
 management_df["call_date"] = call_date
 
-print(management_df)
+
+management_df["company_id"] = 1
+
+management_df["commentary_source"] = "ROIC.ai Earnings Call"
+
+
+management_df = management_df.rename(
+    columns={
+        "text": "commentary_text",
+ 
+    }
+)
+
+management_df["commentary_hash"] = management_df["commentary_text"].apply(
+    lambda text: hashlib.sha256(text.encode("utf-8")).hexdigest()
+)
+
+
+management_df = management_df[
+    [
+        "company_id",
+        "call_date",
+        "commentary_source",
+        "commentary_text",
+        "commentary_hash",
+        "fiscal_year",
+        "fiscal_quarter",
+        "speaker"
+    ]
+]
+
+
+
+
+print(management_df.columns)
+print(management_df.head())
+
