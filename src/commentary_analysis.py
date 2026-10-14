@@ -1,0 +1,60 @@
+import psycopg
+import pandas as pd
+from config import DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD
+
+
+select_query = """
+    SELECT  
+        commentary_id, 
+        fiscal_year,
+        fiscal_quarter,
+        speaker,
+        commentary_text
+    FROM management_commentary;
+"""
+
+try:
+    with psycopg.connect(
+        host=DB_HOST,
+        port=DB_PORT,
+        dbname=DB_NAME,
+        user=DB_USER,
+        password=DB_PASSWORD
+    ) as conn:
+
+        with conn.cursor() as cursor:
+            cursor.execute(select_query)
+            rows = cursor.fetchall()
+
+            column_names = [
+                "commentary_id",
+                "fiscal_year",
+                "fiscal_quarter",
+                "speaker",
+                "commentary_text"
+]
+
+            commentary_df = pd.DataFrame(rows, columns=column_names)
+
+
+            management_speakers = [
+                "Hilton Schlosberg",
+                "Tom Kelly",
+                "Rob Gehring",
+                "Guy Carling",
+                "Mike Rodriguez",
+                "Emelie Tirre"
+            ]
+
+            commentary_df = commentary_df[
+                commentary_df["speaker"].isin(management_speakers)
+            ].copy()
+
+            print(commentary_df.head())
+            print(commentary_df.shape)
+   
+
+    print(f"Successfully loaded {len(rows)} management commentary records.")
+
+except Exception as error:
+    print(f"Database retrieval failed: {error}")
