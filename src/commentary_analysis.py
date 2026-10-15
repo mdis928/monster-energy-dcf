@@ -21,7 +21,7 @@ def identify_themes(text, themes):
     for theme, phrases in themes.items():
         found = [
             phrase for phrase in phrases
-            if phrase in text
+            if phrase.lower() in text
         ]
 
         if found:
@@ -73,6 +73,9 @@ try:
                     "purchase frequency",
                     "new consumers",
                     "usage occasions"
+                    "new consumer",
+                    "greater acceptance",
+                    "household consumption",
                 ],
                 "market_share": [
                     "market share",
@@ -90,7 +93,8 @@ try:
                     "distribution expansion",
                     "new distribution",
                     "new channels",
-                    "expanded availability"
+                    "expanded availability",
+                    "FSOP customers",
                 ],
                 "innovation": [
                     "product innovation",
@@ -122,6 +126,22 @@ try:
 
         print(f"Records with matches: {matched_records}/{total_records}")
         print(f"Detection coverage: {coverage:.1f}%")
+
+        print(
+    commentary_df.loc[
+        commentary_df["commentary_id"] == 23,
+        ["commentary_id", "theme_matches"]
+    ].to_string(index=False)
+)
+        
+        
+        unmatched_df = commentary_df[
+            commentary_df["theme_matches"].apply(lambda matches: len(matches) == 0)
+        ]
+
+        print(unmatched_df[
+        ["commentary_id", "fiscal_quarter", "speaker", "commentary_text"]
+        ].to_string(index=False))
     
 
         #print(commentary_df[["commentary_id", "theme_matches"]].to_string(index=False))
