@@ -13,6 +13,24 @@ select_query = """
     FROM management_commentary;
 """
 
+def identify_themes(text, themes):
+    matches = {}
+
+    text = text.lower()
+
+    for theme, phrases in themes.items():
+        found = [
+            phrase for phrase in phrases
+            if phrase in text
+        ]
+
+        if found:
+            matches[theme] = found
+
+    return matches
+
+
+
 try:
     with psycopg.connect(
         host=DB_HOST,
@@ -46,15 +64,71 @@ try:
                 "Emelie Tirre"
             ]
 
-            commentary_df = commentary_df[
-                commentary_df["speaker"].isin(management_speakers)
-            ].copy()
 
-            print(commentary_df.head())
-            print(commentary_df.shape)
+
+        revenue_themes = {
+                "consumer_demand": [
+                    "consumer demand",
+                    "household penetration",
+                    "purchase frequency",
+                    "new consumers",
+                    "usage occasions"
+                ],
+                "market_share": [
+                    "market share",
+                    "share gains",
+                    "gained share",
+                    "share growth"
+                ],
+                "category_growth": [
+                    "category growth",
+                    "energy drink category",
+                    "category expansion",
+                    "category performance"
+                ],
+                "distribution": [
+                    "distribution expansion",
+                    "new distribution",
+                    "new channels",
+                    "expanded availability"
+                ],
+                "innovation": [
+                    "product innovation",
+                    "new product launches",
+                    "innovation",
+                    "new flavors"
+                ],
+                "pricing_revenue_mix": [
+                    "pricing",
+                    "price increases",
+                    "revenue mix",
+                    "price mix"
+                ]
+            }
+
+        commentary_df = commentary_df[
+            commentary_df["speaker"].isin(management_speakers)
+        ].copy()
+
+        commentary_df["theme_matches"] = commentary_df["commentary_text"].apply(
+            lambda text: identify_themes(text, revenue_themes)
+        )
+
+        matched_records = commentary_df["theme_matches"].apply(bool).sum()
+
+        total_records = len(commentary_df)
+
+        coverage = (matched_records / total_records) * 100
+
+        print(f"Records with matches: {matched_records}/{total_records}")
+        print(f"Detection coverage: {coverage:.1f}%")
+    
+
+        #print(commentary_df[["commentary_id", "theme_matches"]].to_string(index=False))
+        print(commentary_df.shape)   
    
 
-    print(f"Successfully loaded {len(rows)} management commentary records.")
+        print(f"Successfully loaded {len(rows)} management commentary records.")
 
 except Exception as error:
     print(f"Database retrieval failed: {error}")
