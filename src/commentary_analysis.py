@@ -127,13 +127,53 @@ try:
         print(f"Records with matches: {matched_records}/{total_records}")
         print(f"Detection coverage: {coverage:.1f}%")
 
+        matched_df = commentary_df[
+        commentary_df["theme_matches"].apply(bool)
+        ].copy()
+
+        theme_rows = []
+
+        for _, row in matched_df.iterrows():
+            for theme, phrases in row["theme_matches"].items():
+                theme_rows.append({
+            "commentary_id": row["commentary_id"],
+            "fiscal_year": row["fiscal_year"],
+            "fiscal_quarter": row["fiscal_quarter"],
+            "theme": theme,
+            "matched_phrases": ", ".join(phrases),
+            "commentary_text": row["commentary_text"]
+        })
+
+        theme_df = pd.DataFrame(theme_rows)
+
         print(
-    commentary_df.loc[
-        commentary_df["commentary_id"] == 23,
-        ["commentary_id", "theme_matches"]
-    ].to_string(index=False)
+    theme_df.groupby(
+        ["fiscal_year", "fiscal_quarter", "theme"]
+    ).size().to_string()
 )
         
+        
+        consumer_df = theme_df[
+        theme_df["theme"] == "consumer_demand"
+]
+
+        print(
+    consumer_df[
+       ["commentary_id", "fiscal_quarter", "matched_phrases"]
+    ].to_string(index=False)
+)
+        print(
+    consumer_df.loc[
+        consumer_df["commentary_id"] == 17,
+        "commentary_text"
+        ].iloc[0]
+)
+
+        print(
+        matched_df[
+        ["commentary_id", "fiscal_year", "fiscal_quarter", "theme_matches"]
+        ].to_string(index=False)
+)
         
         unmatched_df = commentary_df[
             commentary_df["theme_matches"].apply(lambda matches: len(matches) == 0)
