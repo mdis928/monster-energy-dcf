@@ -156,6 +156,23 @@ try:
         consumer_df = theme_df[
         theme_df["theme"] == "consumer_demand"
 ]
+        market_df = theme_df[
+    theme_df["theme"] == "market_share"
+]
+        category_df = theme_df[
+    theme_df["theme"] == "category_growth"
+]
+        print(
+            category_df[
+                ["commentary_id", "fiscal_quarter", "matched_phrases"]
+            ].to_string(index=False)
+        )
+
+        print(
+    market_df[
+        ["commentary_id", "fiscal_quarter", "matched_phrases"]
+    ].to_string(index=False)
+)
 
         print(
     consumer_df[
@@ -168,6 +185,20 @@ try:
         "commentary_text"
         ].iloc[0]
 )
+        print(
+    category_df.loc[
+        category_df["commentary_id"] == 7,
+        "commentary_text"
+    ].iloc[0]
+)
+        distribution_df = theme_df[
+    theme_df["theme"] == "distribution"
+]
+        print(
+    distribution_df[
+        ["commentary_id", "fiscal_quarter", "matched_phrases"]
+    ].to_string(index=False)
+) 
 
         print(
         matched_df[
