@@ -248,6 +248,179 @@ try:
             ].iloc[0]
 )
 
+        #Quaterly mangement commentary scoring
+        quarterly_scores = []
+        quarterly_scores.append({
+            "fiscal_year": 2026,
+            "fiscal_quarter": 1,
+            "theme": "distribution",
+            "score": None,
+            "commentary_ids": [],
+            "rationale": "No distribution-related commentary detected in Q1"
+        })
+
+        quarterly_scores.append({
+            "fiscal_year": 2026,
+            "fiscal_quarter": 2,
+            "theme": "distribution",
+            "score": 0,
+            "commentary_ids": [21],
+            "rationale": "Management identified potential food-service distribution opportunities, but did not establish realized revenue growth from those opportunities."
+        })
+
+        quarterly_scores.append({
+            "fiscal_year": 2026,
+            "fiscal_quarter": 1,
+            "theme": "innovation",
+            "score": 1,
+            "commentary_ids": [70, 75, 76, 77, 78, 79],
+            "rationale": "Management reported successful product launches, innovation-driven sales growth, and positive performance from existing products."
+            })
+
+
+        quarterly_scores.append({
+            "fiscal_year": 2026,
+            "fiscal_quarter": 2,
+            "theme": "innovation",
+            "score": 1,
+            "commentary_ids": [7, 14, 15, 16, 20],
+            "rationale": "Management reported successful product launches, innovation-driven consumer recruitment, and positive sales contributions from new products."
+            })  
+
+        quarterly_scores.append({
+            "fiscal_year": 2026,
+            "fiscal_quarter": 1,
+            "theme": "pricing_revenue_mix",
+            "score": 1,
+            "commentary_ids": [70, 71, 72, 74],
+            "rationale": "Management reported effective pricing actions alongside continued volume growth and market-share gains, supporting revenue growth despite input-cost pressures."
+            })
+
+        quarterly_scores.append({
+            "fiscal_year": 2026,
+            "fiscal_quarter": 2,
+            "theme": "pricing_revenue_mix",
+            "score": 1,
+            "commentary_ids": [7, 10, 11, 24],
+            "rationale": "Management reported effective pricing strategies and low-single-digit price increases in EMEA, supporting revenue growth despite continued cost pressures."
+            })
+
+        quarterly_scores.append({
+            "fiscal_year": 2026,
+            "fiscal_quarter": 1,
+            "theme": "consumer_demand",
+            "score": 1,
+            "commentary_ids": [70, 74, 79, 81],
+            "rationale": "Management commentary indicated continued consumer demand and positive sales momentum, supporting revenue growth."
+            })
+
+        quarterly_scores.append({
+            "fiscal_year": 2026,
+            "fiscal_quarter": 2,
+            "theme": "consumer_demand",
+            "score": 1,
+            "commentary_ids": [7, 17],
+            "rationale": "Management reported double-digit sales growth, increasing household penetration, and recruitment of new consumers, supporting continued revenue demand."
+            })
+
+        quarterly_scores.append({
+            "fiscal_year": 2026,
+            "fiscal_quarter": 1,
+            "theme": "market_share",
+            "score": 1,
+            "commentary_ids": [70, 82],
+            "rationale": "Management reported market-share gains and competitive performance supporting Monster's revenue-growth outlook."
+            })
+
+        quarterly_scores.append({
+            "fiscal_year": 2026,
+            "fiscal_quarter": 2,
+            "theme": "market_share",
+            "score": 1,
+            "commentary_ids": [7, 14],
+            "rationale": "Management reported market-share gains and strong competitive performance across key markets, supporting revenue growth."
+            })
+
+        quarterly_scores.append({
+            "fiscal_year": 2026,
+            "fiscal_quarter": 1,
+            "theme": "category_growth",
+            "score": 1,
+            "commentary_ids": [70, 79],
+            "rationale": "Management reported continued growth in the energy drink category, providing a favorable environment for Monster's revenue expansion."
+            })
+
+        quarterly_scores.append({
+            "fiscal_year": 2026,
+            "fiscal_quarter": 2,
+            "theme": "category_growth",
+            "score": 1,
+            "commentary_ids": [7, 14, 17],
+            "rationale": "Management reported continued energy drink category expansion, particularly in international markets, supporting Monster's revenue-growth outlook."
+            })
+
+        # Convert quarterly scores into a DataFrame
+        quarterly_scores_df = pd.DataFrame(quarterly_scores)
+
+        print("\nQuarterly Management Commentary Scores:")
+        print(
+            quarterly_scores_df[
+                ["fiscal_year", "fiscal_quarter", "theme", "score"]
+            ].to_string(index=False)
+        )
+
+        # Calculate quarterly composite scores
+        quarterly_composite_df = (
+            quarterly_scores_df
+            .groupby(["fiscal_year", "fiscal_quarter"])["score"]
+            .agg(["mean", "count"])
+            .reset_index()
+        )
+
+        print("\nQuarterly Composite Scores:")
+        print(quarterly_composite_df.to_string(index=False))
+
+
+        # Validate one score per theme per quarter
+        duplicates = quarterly_scores_df.duplicated(
+            subset=["fiscal_year", "fiscal_quarter", "theme"]
+        )
+
+        print("\nDuplicate scoring records:", duplicates.sum())
+
+        # Validate supporting commentary IDs
+        valid_ids = set(commentary_df["commentary_id"])
+
+        referenced_ids = {
+            commentary_id
+            for ids in quarterly_scores_df["commentary_ids"]
+            for commentary_id in ids
+        }
+
+        missing_ids = referenced_ids - valid_ids
+
+        print("\nMissing commentary IDs:", missing_ids)
+
+        quarter_mismatches = []
+
+    for _, row in quarterly_scores_df.iterrows():
+        for commentary_id in row["commentary_ids"]:
+            source = commentary_df[
+                commentary_df["commentary_id"] == commentary_id
+            ]
+
+            if not source.empty:
+                record = source.iloc[0]
+
+                if (
+                    record["fiscal_year"] != row["fiscal_year"]
+                    or record["fiscal_quarter"] != row["fiscal_quarter"]
+                ):
+                    quarter_mismatches.append(commentary_id)
+        print("\nQuarter mismatches:", quarter_mismatches)
+
+
+        
 
         print(
         matched_df[
