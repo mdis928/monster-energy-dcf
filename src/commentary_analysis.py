@@ -195,10 +195,59 @@ try:
     theme_df["theme"] == "distribution"
 ]
         print(
+    distribution_df.loc[
+        distribution_df["commentary_id"] == 21,
+        "commentary_text"
+    ].iloc[0]
+)
+        
+        print(
     distribution_df[
         ["commentary_id", "fiscal_quarter", "matched_phrases"]
     ].to_string(index=False)
 ) 
+        innovation_df = theme_df[
+        theme_df["theme"] == "innovation"
+]
+
+        print(
+    innovation_df[
+        ["commentary_id", "fiscal_quarter", "matched_phrases"]
+    ].to_string(index=False)
+)  
+
+        for _, row in innovation_df[
+                innovation_df["fiscal_quarter"] == 2
+        ].iterrows():
+            print(f"\nCommentary ID: {row['commentary_id']}")
+            print(row["commentary_text"])
+        
+        pricing_df = theme_df[
+            theme_df["theme"] == "pricing_revenue_mix"
+]
+
+
+        print(
+            pricing_df[
+            ["commentary_id", "fiscal_quarter", "matched_phrases"]
+            ].to_string(index=False)
+)
+
+        for _, row in pricing_df[
+                pricing_df["fiscal_quarter"] == 1
+            ].iterrows():
+            print(f"\nCommentary ID: {row['commentary_id']}")
+            print(row["commentary_text"])
+
+
+        print("\n========== Q2 PRICING - ID 24 ==========")
+        print(
+            pricing_df.loc[
+                pricing_df["commentary_id"] == 24,
+                "commentary_text"
+            ].iloc[0]
+)
+
 
         print(
         matched_df[
