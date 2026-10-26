@@ -233,8 +233,8 @@ try:
             ].to_string(index=False)
 )
 
-        for _, row in pricing_df[
-                pricing_df["fiscal_quarter"] == 1
+        for _, row in consumer_df[
+                consumer_df["commentary_id"].isin([7, 17])
             ].iterrows():
             print(f"\nCommentary ID: {row['commentary_id']}")
             print(row["commentary_text"])
@@ -293,7 +293,7 @@ try:
             "theme": "pricing_revenue_mix",
             "score": 1,
             "commentary_ids": [70, 71, 72, 74],
-            "rationale": "Management reported effective pricing actions alongside continued volume growth and market-share gains, supporting revenue growth despite input-cost pressures."
+            "rationale": "Implemented late-2025 pricing actions were reported as effective, with continued volume growth and market-share gains. Incremental revenue attributable specifically to pricing was not quantified."
             })
 
         quarterly_scores.append({
@@ -302,7 +302,7 @@ try:
             "theme": "pricing_revenue_mix",
             "score": 1,
             "commentary_ids": [7, 10, 11, 24],
-            "rationale": "Management reported effective pricing strategies and low-single-digit price increases in EMEA, supporting revenue growth despite continued cost pressures."
+            "rationale": "Management confirmed implemented pricing increases in EMEA and reported continued volume growth alongside consistent pricing. The incremental revenue contribution from pricing was not quantified."
             })
 
         quarterly_scores.append({
@@ -311,7 +311,7 @@ try:
             "theme": "consumer_demand",
             "score": 1,
             "commentary_ids": [70, 74, 79, 81],
-            "rationale": "Management commentary indicated continued consumer demand and positive sales momentum, supporting revenue growth."
+            "rationale": "Management reported Monster sales growth and increased purchase frequency, supported by broader category acceptance and household penetration. Some evidence reflects category-wide trends rather than Monster-specific demand."
             })
 
         quarterly_scores.append({
@@ -320,7 +320,7 @@ try:
             "theme": "consumer_demand",
             "score": 1,
             "commentary_ids": [7, 17],
-            "rationale": "Management reported double-digit sales growth, increasing household penetration, and recruitment of new consumers, supporting continued revenue demand."
+            "rationale": "Reported sales growth and management-reported household penetration support positive consumer demand. Future consumer recruitment opportunities remain unverified, and revenue growth also reflects factors beyond demand."
             })
 
         quarterly_scores.append({
