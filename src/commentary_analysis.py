@@ -201,39 +201,49 @@ try:
     ].iloc[0]
 )
         
-        print(
-    distribution_df[
-        ["commentary_id", "fiscal_quarter", "matched_phrases"]
-    ].to_string(index=False)
-) 
+#         print(
+#     distribution_df[
+#         ["commentary_id", "fiscal_quarter", "matched_phrases"]
+#     ].to_string(index=False)
+# ) 
         innovation_df = theme_df[
         theme_df["theme"] == "innovation"
 ]
 
-        print(
-    innovation_df[
-        ["commentary_id", "fiscal_quarter", "matched_phrases"]
-    ].to_string(index=False)
-)  
+# Manual review: Display innovation theme matches and Q2 commentary.
+# Disabled after validating the quarterly innovation scores.
+# Retained for future audits and methodology reviews.
 
-        for _, row in innovation_df[
-                innovation_df["fiscal_quarter"] == 2
-        ].iterrows():
-            print(f"\nCommentary ID: {row['commentary_id']}")
-            print(row["commentary_text"])
+
+#         print(
+#     innovation_df[
+#         ["commentary_id", "fiscal_quarter", "matched_phrases"]
+#     ].to_string(index=False)
+# )  
+
+        # for _, row in innovation_df[
+        #         innovation_df["fiscal_quarter"] == 2
+        # ].iterrows():
+        #     print(f"\nCommentary ID: {row['commentary_id']}")
+        #     print(row["commentary_text"])
         
         pricing_df = theme_df[
-            theme_df["theme"] == "pricing_revenue_mix"
-]
+             theme_df["theme"] == "pricing_revenue_mix"
+ ]
 
 
-        print(
-            pricing_df[
-            ["commentary_id", "fiscal_quarter", "matched_phrases"]
-            ].to_string(index=False)
-)
+# Manual review: Display pricing and revenue-mix keyword matches.
+# Disabled after completing quarterly pricing validation.
 
-        # Review Q1 and Q2 Category Growth
+#         print(
+#             pricing_df[
+#             ["commentary_id", "fiscal_quarter", "matched_phrases"]
+#             ].to_string(index=False)
+# )
+
+# Manual review: Q1 and Q2 category-growth commentary.
+# Disabled after validating the quarterly theme scores.
+# Retained for future review and methodology audits.
         category_review_ids = [70, 79, 7, 14, 17]
 
         for _, row in category_df[
@@ -259,14 +269,16 @@ try:
             #print(f"\nCommentary ID: {row['commentary_id']}")
             #print(row["commentary_text"])
 
+# Manual review: Display Q2 pricing commentary ID 24.
+# Disabled after validation; retained for future auditing.
 
-        print("\n========== Q2 PRICING - ID 24 ==========")
-        print(
-            pricing_df.loc[
-                pricing_df["commentary_id"] == 24,
-                "commentary_text"
-            ].iloc[0]
-)
+#         print("\n========== Q2 PRICING - ID 24 ==========")
+#         print(
+#             pricing_df.loc[
+#                 pricing_df["commentary_id"] == 24,
+#                 "commentary_text"
+#             ].iloc[0]
+# )
 
         #Quaterly mangement commentary scoring
         quarterly_scores = []
@@ -440,27 +452,34 @@ try:
         print("\nQuarter mismatches:", quarter_mismatches)
 
 
-        
+# Debugging output: Displays records matched to revenue-related themes.
+# Disabled after manual validation to reduce terminal clutter.    
 
-        print(
-        matched_df[
-        ["commentary_id", "fiscal_year", "fiscal_quarter", "theme_matches"]
-        ].to_string(index=False)
-)
+#         print(
+#         matched_df[
+#         ["commentary_id", "fiscal_year", "fiscal_quarter", "theme_matches"]
+#         ].to_string(index=False)
+# )
         
         unmatched_df = commentary_df[
             commentary_df["theme_matches"].apply(lambda matches: len(matches) == 0)
         ]
 
-        print(unmatched_df[
-        ["commentary_id", "fiscal_quarter", "speaker", "commentary_text"]
-        ].to_string(index=False))
-    
 
+# Debugging output: Displays records without detected revenue themes.
+# Retained for future reviews of keyword-detection coverage.
+        # print(unmatched_df[
+        # ["commentary_id", "fiscal_quarter", "speaker", "commentary_text"]
+        # ].to_string(index=False))
+
+
+# Data quality check: Display the number of rows and columns
+# in the processed management commentary dataset.
         #print(commentary_df[["commentary_id", "theme_matches"]].to_string(index=False))
         print(commentary_df.shape)   
-   
 
+   
+# Confirm the number of management commentary records retrieved.
         print(f"Successfully loaded {len(rows)} management commentary records.")
 
 except Exception as error:
