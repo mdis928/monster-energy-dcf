@@ -233,11 +233,31 @@ try:
             ].to_string(index=False)
 )
 
-        for _, row in consumer_df[
-                consumer_df["commentary_id"].isin([7, 17])
-            ].iterrows():
+        # Review Q1 and Q2 Category Growth
+        category_review_ids = [70, 79, 7, 14, 17]
+
+        for _, row in category_df[
+            category_df["commentary_id"].isin(category_review_ids)
+        ].iterrows():
             print(f"\nCommentary ID: {row['commentary_id']}")
+            print(f"Quarter: Q{row['fiscal_quarter']}")
             print(row["commentary_text"])
+
+        # # Review remaining themes
+        # review_ids = [70, 82, 7, 14]
+
+        # for _, row in market_df[
+        #     market_df["commentary_id"].isin(review_ids)
+        # ].iterrows():
+        #     print(f"\nCommentary ID: {row['commentary_id']}")
+        #     print(f"Quarter: Q{row['fiscal_quarter']}")
+        #     print(row["commentary_text"])
+
+        #for _, row in consumer_df[
+                #consumer_df["commentary_id"].isin([7, 17])
+            #]#.iterrows():
+            #print(f"\nCommentary ID: {row['commentary_id']}")
+            #print(row["commentary_text"])
 
 
         print("\n========== Q2 PRICING - ID 24 ==========")
@@ -329,7 +349,7 @@ try:
             "theme": "market_share",
             "score": 1,
             "commentary_ids": [70, 82],
-            "rationale": "Management reported market-share gains and competitive performance supporting Monster's revenue-growth outlook."
+            "rationale": "Management reported market-share gains across multiple markets, including the core Monster brand, while acknowledging weaker performance in certain secondary brands. Share gains have not been independently verified."
             })
 
         quarterly_scores.append({
@@ -338,7 +358,7 @@ try:
             "theme": "market_share",
             "score": 1,
             "commentary_ids": [7, 14],
-            "rationale": "Management reported market-share gains and strong competitive performance across key markets, supporting revenue growth."
+            "rationale": "Management reported market-share gains across multiple markets, including the core Monster brand, while acknowledging weaker performance in certain secondary brands. Share gains have not been independently verified."
             })
 
         quarterly_scores.append({
@@ -347,7 +367,7 @@ try:
             "theme": "category_growth",
             "score": 1,
             "commentary_ids": [70, 79],
-            "rationale": "Management reported continued growth in the energy drink category, providing a favorable environment for Monster's revenue expansion."
+            "rationale": "Management cited positive energy drink category growth across multiple regions, supported by reported scanner data. Category expansion provides a favorable demand backdrop but does not guarantee Monster-specific revenue growth."
             })
 
         quarterly_scores.append({
@@ -356,7 +376,7 @@ try:
             "theme": "category_growth",
             "score": 1,
             "commentary_ids": [7, 14, 17],
-            "rationale": "Management reported continued energy drink category expansion, particularly in international markets, supporting Monster's revenue-growth outlook."
+            "rationale": "Management reported continued energy drink category growth across major regions, including strong European zero-sugar growth. Regional category trends are supportive, but growth rates vary and are not directly equivalent to Monster revenue growth."
             })
 
         # Convert quarterly scores into a DataFrame
