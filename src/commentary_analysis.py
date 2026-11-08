@@ -449,38 +449,59 @@ try:
                     or record["fiscal_quarter"] != row["fiscal_quarter"]
                 ):
                     quarter_mismatches.append(commentary_id)
-        print("\nQuarter mismatches:", quarter_mismatches)
+    # Display all quarter mismatches after validating every scoring record.
+    print("\nQuarter mismatches:", quarter_mismatches)
+
+    # Stop processing if quarterly scoring validation fails.
+    if duplicates.any() or missing_ids or quarter_mismatches:
+        raise ValueError("Quarterly management commentary validation failed.")
+
+    # Export validated quarterly management commentary scores for downstream analysis.
+    quarterly_scores_df.to_csv("quarterly_management_scores.csv", index=False)
+
+    # Prepare a parameterized SQL statement to store validated quarterly scores.
+
+    insert_query = """
+        INSERT INTO management_commentary_scores
+        (company_id, fiscal_year, fiscal_quarter, theme, score, commentary_ids, rationale)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        ON CONFLICT (company_id, fiscal_year, fiscal_quarter, theme)
+        DO UPDATE SET
+            score = EXCLUDED.score,
+            commentary_ids = EXCLUDED.commentary_ids,
+            rationale = EXCLUDED.rationale;
+    """
 
 
-# Debugging output: Displays records matched to revenue-related themes.
-# Disabled after manual validation to reduce terminal clutter.    
+    # Debugging output: Displays records matched to revenue-related themes.
+    # Disabled after manual validation to reduce terminal clutter.    
 
-#         print(
-#         matched_df[
-#         ["commentary_id", "fiscal_year", "fiscal_quarter", "theme_matches"]
-#         ].to_string(index=False)
-# )
-        
-        unmatched_df = commentary_df[
+    #         print(
+    #         matched_df[
+    #         ["commentary_id", "fiscal_year", "fiscal_quarter", "theme_matches"]
+    #         ].to_string(index=False)
+    # )
+            
+    unmatched_df = commentary_df[
             commentary_df["theme_matches"].apply(lambda matches: len(matches) == 0)
         ]
 
 
-# Debugging output: Displays records without detected revenue themes.
-# Retained for future reviews of keyword-detection coverage.
-        # print(unmatched_df[
-        # ["commentary_id", "fiscal_quarter", "speaker", "commentary_text"]
-        # ].to_string(index=False))
+    # Debugging output: Displays records without detected revenue themes.
+    # Retained for future reviews of keyword-detection coverage.
+            # print(unmatched_df[
+            # ["commentary_id", "fiscal_quarter", "speaker", "commentary_text"]
+            # ].to_string(index=False))
 
 
-# Data quality check: Display the number of rows and columns
-# in the processed management commentary dataset.
-        #print(commentary_df[["commentary_id", "theme_matches"]].to_string(index=False))
-        print(commentary_df.shape)   
+    # Data quality check: Display the number of rows and columns
+    # in the processed management commentary dataset.
+            #print(commentary_df[["commentary_id", "theme_matches"]].to_string(index=False))
+    print(commentary_df.shape)   
 
-   
-# Confirm the number of management commentary records retrieved.
-        print(f"Successfully loaded {len(rows)} management commentary records.")
+    
+    # Confirm the number of management commentary records retrieved.
+    print(f"Successfully loaded {len(rows)} management commentary records.")
 
 except Exception as error:
     print(f"Database retrieval failed: {error}")
