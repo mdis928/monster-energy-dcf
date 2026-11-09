@@ -471,7 +471,37 @@ try:
             commentary_ids = EXCLUDED.commentary_ids,
             rationale = EXCLUDED.rationale;
     """
+    # Open a separate database connection to save validated quarterly scores.
+    with psycopg.connect(
+    host=DB_HOST,
+    port=DB_PORT,
+    dbname=DB_NAME,
+    user=DB_USER,
+    password=DB_PASSWORD
+) as write_conn:
+        
+        # Iterate through each validated quarterly score before inserting into PostgreSQL.
+        for _, row in quarterly_scores_df.iterrows():
+            # Convert missing pandas scores to Python None for PostgreSQL NULL.
+            score_value = None if pd.isna(row["score"]) else float(row["score"])
 
+            # Convert supporting commentary IDs into standard Python integers.
+            commentary_ids = [int(commentary_id) for commentary_id in row["commentary_ids"]]
+
+            # Prepare the values for the PostgreSQL insert statement.
+            values = (
+            1,  # Monster Beverage company_id
+            int(row["fiscal_year"]),
+            int(row["fiscal_quarter"]),
+            row["theme"],
+            score_value,
+            commentary_ids,
+            row["rationale"]
+        )
+
+                # Execute the parameterized SQL statement using the current score.
+            with write_conn.cursor() as cursor:
+                cursor.execute(insert_query, values)
 
     # Debugging output: Displays records matched to revenue-related themes.
     # Disabled after manual validation to reduce terminal clutter.    
@@ -482,7 +512,7 @@ try:
     #         ].to_string(index=False)
     # )
             
-    unmatched_df = commentary_df[
+        unmatched_df = commentary_df[
             commentary_df["theme_matches"].apply(lambda matches: len(matches) == 0)
         ]
 
