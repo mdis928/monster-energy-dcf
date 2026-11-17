@@ -39,11 +39,68 @@ with psycopg.connect(
         cursor.execute(revenue_query)
         revenue_rows = cursor.fetchall()
 
+    # Retrieve management commentary scores for Q1 and Q2 2026.
+        cursor.execute("""
+        SELECT fiscal_year, fiscal_quarter, theme, score
+        FROM management_commentary_scores
+        WHERE fiscal_year = 2026
+        ORDER BY fiscal_quarter, theme;
+        """)
+
+        # Store the retrieved commentary records.
+        commentary_rows = cursor.fetchall()
+
+        # Retrieve Monster Beverage store observations from PostgreSQL.
+        cursor.execute("""
+        SELECT observation_date,
+               store_name,
+               store_location,
+               restock_signal,
+               restock_frequency_days,
+               notes
+        FROM store_observations
+        WHERE company_id = 1
+        ORDER BY observation_date, store_name;
+        """)
+
+        # Store the retrieved retail observation records.
+        store_rows = cursor.fetchall()
+
+    # Verify the number of store observations retrieved.
+    print(f"Store Observations Retrieved: {len(store_rows)}")
+
 
     # Display the retrieved financial records for initial verification.
     print(revenue_rows)
 
-        # Convert the PostgreSQL query results into a pandas DataFrame.
+
+    # Verify the number of management commentary records retrieved.
+    print(f"Management Commentary Records Retrieved: {len(commentary_rows)}")
+
+
+    # Convert management commentary records into a pandas DataFrame.
+    commentary_df = pd.DataFrame(
+        commentary_rows,
+        columns=["fiscal_year", "fiscal_quarter", "theme", "score"]
+    )
+
+    # Display the management commentary records.
+    print("\nMonster Beverage Management Commentary Scores:")
+    print(commentary_df.to_string(index=False))
+
+    # Convert management commentary scores to numeric values.
+    commentary_df["score"] = pd.to_numeric(commentary_df["score"])
+
+    # Calculating the average management commentaryt score for each quarter.
+    quarterly_scores = commentary_df.groupby("fiscal_quarter")["score"].mean()
+    
+
+    # To display the quarterly management commentary averages
+    print("\nQuarterly Management Commentary Averages:")
+    print(quarterly_scores)
+
+
+    # Convert the PostgreSQL query results into a pandas DataFrame.
     revenue_df = pd.DataFrame(
         revenue_rows,
         columns=["fiscal_year", "revenue"]
@@ -157,3 +214,12 @@ scenario_df = pd.DataFrame(scenario_forecasts)
 # Display all three revenue scenarios.
 print("\nMonster Beverage Revenue Scenarios:")
 print(scenario_df.to_string(index=False, float_format="{:,.0f}".format))
+
+
+# Calculate the average annual revenue growth, excluding the first year
+average_growth_rate = revenue_df["revenue_growth_pct"].dropna().mean()
+
+# Display the average annual revenue growth.
+print(f"Average Annual Revenue Growth: {average_growth_rate:.2f}%")
+
+
