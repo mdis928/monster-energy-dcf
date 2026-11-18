@@ -125,6 +125,27 @@ with psycopg.connect(
 
         # Classify Walmart KOP's restocking frequency as estimated.
     store_summary.loc[walmart_match, "evidence_quality"] = "Estimated"
+
+
+    evidence_map = {
+        "310 S Henderson Rd": "Reported",
+        "160 W DeKalb Pike": "Reported",
+        "145 W DeKalb Pike": "Reported",
+        "100 W DeKalb Pike": "Reported",
+        "312 S Henderson Rd": "Estimated",
+        "1 Village Dr": "Proxy",
+        "2670 Egypt Rd": "Reported",
+        "650 S Trooper Rd": "Reported"
+    }
+
+    for address, quality in evidence_map.items():
+        store_summary.loc[
+            store_summary["store_location"].str.contains(address),
+            "evidence_quality"
+        ] = quality
+
+    print(store_summary.to_string(index=False))
+    print(store_summary["evidence_quality"].value_counts())
     
     
     # Classifying Walmart's KoP's Restocking frequency as estimated
