@@ -70,6 +70,76 @@ with psycopg.connect(
     print(f"Store Observations Retrieved: {len(store_rows)}")
 
 
+    # Convert store observations into a pandas DataFrame.
+    store_df = pd.DataFrame(
+        store_rows,
+        columns=[
+            "observation_date",
+            "store_name",
+            "store_location",
+            "restock_signal",
+            "restock_frequency_days",
+            "notes"
+        ]
+    )
+
+    # Display our store observations.
+    print("\nMonster Beverage Store Observations:")
+    print(store_df.to_string(index=False))
+
+
+    # Convert restocking frequency values into numeric data
+    store_df["restock_frequency_days"] = pd.to_numeric(
+        store_df["restock_frequency_days"]
+    )
+
+    # Calculate the average restocking interval across our store observation.
+    average_restock_days = store_df["restock_frequency_days"].mean()
+
+    # Displaying the average restocking interval.
+    print(f"\nAverage Restocking Interval: {average_restock_days:2f} days")
+
+
+    # Select the columns needed for our retail demand analysis.
+    store_summary = store_df[
+        ["store_name", "store_location", "restock_signal", "restock_frequency_days"]
+    ]
+
+    # Display a simplified store observation table.
+    print("\nMonster Beverage Store Restocking Summary:")
+    print(store_summary.to_string(index=False))
+
+    # Identify whether each observation has a confirmed restocking schedule.
+    store_summary = store_summary.copy()
+
+
+    # Create an initial data-quality classification.
+    store_summary["evidence_quality"] = "Review Required"
+
+
+        # Check whether pandas can identify the Walmart KOP location.
+    walmart_match = (
+        (store_summary["store_name"] == "Walmart") &
+        (store_summary["store_location"].str.contains("275 N Gulph Rd"))
+    )
+
+        # Classify Walmart KOP's restocking frequency as estimated.
+    store_summary.loc[walmart_match, "evidence_quality"] = "Estimated"
+    
+    
+    # Classifying Walmart's KoP's Restocking frequency as estimated
+    # store_summary.loc[
+        #(store_summary["store_name"] == "Walmary") &
+        #(store_summary["store_location"].str.contains("275 N Gulph Rd")),
+        #"evidence_quality"
+    #] = "Estimated"
+
+
+    # Display the store observations with their evidence-quality classifications.
+    print("\nStore Observation Evidence Quality:")
+    print(store_summary.to_string(index=False))
+
+
     # Display the retrieved financial records for initial verification.
     print(revenue_rows)
 
