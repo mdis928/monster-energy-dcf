@@ -31,12 +31,20 @@ cash_flow_df = pd.DataFrame(cash_flow_data)
 
 
 
+# Select income statement metrics required for financial analysis and DCF modeling
 income_df = income_statement_df[
-    ["fiscalYear", "revenue", "netIncome", "eps"]
+    ["fiscalYear", "revenue", "netIncome", "eps", "operatingIncome"]
 ].copy()
 
+# Select cash flow statement metrics needed for our DCF valuation
 cash_df = cash_flow_df[
-    ["fiscalYear", "freeCashFlow"]
+    [
+        "fiscalYear",
+        "freeCashFlow",
+        "depreciationAndAmortization",
+        "capitalExpenditure",
+        "changeInWorkingCapital",
+    ]
 ].copy()
  
 financials_df = income_df.merge(
@@ -45,16 +53,22 @@ financials_df = income_df.merge(
     how="left"
 )
 
+# Rename FMP financial statement fields to match our PostgreSQL naming convention.
 financials_df = financials_df.rename(
     columns={
         "fiscalYear": "fiscal_year",
         "netIncome": "net_income",
-        "freeCashFlow": "free_cash_flow"
+        "freeCashFlow": "free_cash_flow",
+        "operatingIncome": "operating_income",
+        "depreciationAndAmortization": "depreciation_amortization",
+        "capitalExpenditure": "capital_expenditure",
+        "changeInWorkingCapital": "change_in_working_capital"
     }
 )
 
 financials_df["company_id"] = 1
 
+# Select and organize the financial metrics for PostgreSQL and DCF analysis
 financials_df = financials_df[
     [
         "company_id",
@@ -62,9 +76,14 @@ financials_df = financials_df[
         "revenue",
         "net_income",
         "free_cash_flow",
-        "eps"
+        "eps",
+        "operating_income",
+        "depreciation_amortization",
+        "capital_expenditure",
+        "change_in_working_capital"
     ]
 ]
 
+# Display the expanded historical financial dataset.
 print(financials_df)
 

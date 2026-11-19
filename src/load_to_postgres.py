@@ -12,15 +12,23 @@ insert_query = """
         revenue,
         net_income,
         free_cash_flow,
-        eps
+        eps,
+        operating_income,
+        depreciation_amortization,
+        capital_expenditure,
+        change_in_working_capital
     )
-    VALUES (%s, %s, %s, %s, %s, %s)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     ON CONFLICT (company_id, fiscal_year)
     DO UPDATE SET
-        revenue = EXCLUDED.revenue,
-        net_income = EXCLUDED.net_income,
-        free_cash_flow = EXCLUDED.free_cash_flow,
-        eps = EXCLUDED.eps;
+    revenue = EXCLUDED.revenue,
+    net_income = EXCLUDED.net_income,
+    free_cash_flow = EXCLUDED.free_cash_flow,
+    eps = EXCLUDED.eps,
+    operating_income = EXCLUDED.operating_income,
+    depreciation_amortization = EXCLUDED.depreciation_amortization,
+    capital_expenditure = EXCLUDED.capital_expenditure,
+    change_in_working_capital = EXCLUDED.change_in_working_capital;
 """
 
 management_insert_query  = """
@@ -44,6 +52,10 @@ management_insert_query  = """
 )
 DO NOTHING
 """
+
+# Verify the financial dataset contains all 10 expected columns.
+print("Financial columns:", financials_df.columns.tolist())
+print("Number of financial columns:", len(financials_df.columns))
 
 try:
     with psycopg.connect(
