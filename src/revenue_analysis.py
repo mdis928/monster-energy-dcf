@@ -147,14 +147,6 @@ with psycopg.connect(
     print(store_summary.to_string(index=False))
     print(store_summary["evidence_quality"].value_counts())
     
-    
-    # Classifying Walmart's KoP's Restocking frequency as estimated
-    # store_summary.loc[
-        #(store_summary["store_name"] == "Walmary") &
-        #(store_summary["store_location"].str.contains("275 N Gulph Rd")),
-        #"evidence_quality"
-    #] = "Estimated"
-
 
     # Display the store observations with their evidence-quality classifications.
     print("\nStore Observation Evidence Quality:")
@@ -281,11 +273,27 @@ growth_scenarios = {
     "bull": 0.14
 }
 
+
+# Define hypothetical growth rates to test against our traditional DCF.
+# These are sensitivity assumptions, not predictions from alternative data.
+alternative_growth_scenarios = {
+    "alt_low": historical_growth_rate + 0.01,
+    "alt_mid": historical_growth_rate + 0.02,
+    "alt_high": historical_growth_rate + 0.03
+}
+
+
+# Combine traditional and alternative growth scenarios into one dictionary.
+all_growth_scenarios = {
+    **growth_scenarios,
+    **alternative_growth_scenarios
+}
+
 # Create an empty list to store all scenario forecasts.
 scenario_forecasts = []
 
 # Loop through each growth scenario and its associated growth rate.
-for scenario, growth_rate in growth_scenarios.items():
+for scenario, growth_rate in all_growth_scenarios.items():
     projected_revenue = base_revenue
 
     # Calculate projected revenue for each year in this scenario.
@@ -312,5 +320,77 @@ average_growth_rate = revenue_df["revenue_growth_pct"].dropna().mean()
 
 # Display the average annual revenue growth.
 print(f"Average Annual Revenue Growth: {average_growth_rate:.2f}%")
+
+
+# Display the management commentary scores for our alternative demand analysis.
+print("\nManagement Commentary Data:")
+print(commentary_df)
+
+# Display retail observations with their evidence-quality classifications.
+print("\nRetail Demand Evidence:")
+print(store_summary)
+
+
+# Calculate the averagef management sentiment score.
+# Pandas mean() automatically excludes missing NaN values.
+average_sentiment = commentary_df["score"].mean()
+
+# Display the average sentiment score
+print(f"\nAverage Management Sentiment: {average_sentiment:.2f}")
+
+
+# Calculate the average number of days between retail restocks.
+average_restock_days = store_summary["restock_frequency_days"].mean()
+
+# Display the average retail restocking frequency.
+
+
+# Filter retail observations to include only reported evidence.
+reported_stores = store_summary[
+    store_summary["evidence_quality"] == "Reported"
+]
+
+# Calculate average restocking frequency for reported stores.
+reported_average = reported_stores["restock_frequency_days"].mean()
+
+# Display the result.
+print(f"\nReported Stores Average: {reported_average:.2f} days")
+
+
+# Group retail observations by their evidence-quality classification.
+quality_summary = store_summary.groupby("evidence_quality")["restock_frequency_days"].agg(["count", "mean"])
+
+# Display the number of observations and average restock interval.
+print("\nRestocking Frequency by Evidence Quality:")
+print(quality_summary)
+
+
+# Calculate the average retail restock signal for reported stores only.
+reported_signal = reported_stores["restock_signal"].mean()
+
+# Display the average restock signal.
+print(f"\nReported Retail Restock Signal: {reported_signal:.2f}")
+
+
+# Count how many stores received each restock signal score.
+signal_counts = store_summary["restock_signal"].value_counts().sort_index()
+
+# Display the distribution of retail restock signals.
+print("\nRetail Restock Signal Distribution:")
+print(signal_counts)
+
+
+# Count reported stores with a restock interval of 3.5 days or less.
+frequent_restock_stores = (
+    reported_stores["restock_frequency_days"] <= 3.5
+).sum()
+
+# Calculate the percentage of reported stores restocking at least twice weekly.
+frequent_restock_pct = frequent_restock_stores / len(reported_stores) * 100
+
+# Display the result.
+print(f"\nReported Stores Restocking Twice Weekly or More: {frequent_restock_pct:.1f}%")
+
+
 
 
